@@ -1,1 +1,1 @@
- cross-env
+   cross-env   @nestjs/platform-fastify fastify     lodash class-validator class-transformer @nestjs/swagger @nestjs/platform-fastify mysql2 typeorm  @nestjs/typeorm  deepmerge   @elastic/elasticsearch @nestjs/elasticsearch   @nestjs/config  @nestjs/passport passport passport-local @nestjs/jwt passport-jwt bcrypt jsonwebtoken uuid fastify @types/passport-local @types/passport-jwt @types/bcrypt @types/jsonwebtoken @types/uuid -D  mysql2
