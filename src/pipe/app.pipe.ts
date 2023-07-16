@@ -7,59 +7,56 @@ import { isObject, omit } from 'lodash';
 export default class AppPipe extends ValidationPipe {
   async transform(value: any, metadata: ArgumentMetadata) {
     let { type, metatype } = metadata
-    let dto = metadata as any
-    //从装饰器上获取
-    let options = Reflect.getMetadata(DTO_VALIDATION_OPTIONS, dto) || {}
+    let dto = metatype as any
+    let option = Reflect.getMetadata(DTO_VALIDATION_OPTIONS, dto) || {}
+    //对option 进行解构
+    let { transformOptions, type: optionType, ...customOption } = option
 
-
-    //保存原来的transformOption 和validationOption
-    let initTransformOption = { ...this.transformOptions }
-    let initValidatorOption = { ...this.validatorOptions }
-
-    //对获取的option进行解构
-    let { transfromoption, type: optionType, ...customOption } = options
-
-    //对请求方式进行解构(没有请求方式就默认为body)
+    //进行判断
     let requestType: Paramtype = optionType ?? 'body'
-
     if (requestType !== type) {
       return value
     }
-    //合并
-    if (this.transformOptions) {
-      this.transformOptions = deepmerge(this.transformOptions, transfromoption ?? {}, {
-        arrayMerge: (_d, s, _o) => s,
+
+    //对初始进行保留
+    let initTransformOptions = { ...this.transformOptions }
+    let initValidatorOptions = { ...this.validatorOptions }
+
+    //如果存在进行合并
+    if (transformOptions) {
+      this.transformOptions = deepmerge(this.transformOptions, transformOptions ?? {}, {
+        arrayMerge: (_d, s, _o) => _d
       })
     }
 
     this.validatorOptions = deepmerge(this.validatorOptions, customOption ?? {}, {
-      arrayMerge: (_d, s, _o) => s
+      arrayMerge: (_d, s, _o) => _d
     })
 
     let toValidator = isObject(value) ?
-      Object.fromEntries(Object.entries((value as Record<string, any>)).map(([key, v]) => {
-        if (!isObject(v) || ('mimeType' in v)) {
+      Object.fromEntries(Object.entries((value as Record<string, any>).map(([key, v]) => {
+        if (!isObject(v) || !('mimetype' in v)) {
           return [key, v]
         } else {
-          return [key, omit(v, ['fields'])];
+          return [key, omit(v, 'fields')]
         }
-      })) : value
+      }))) : value
 
-
-    //序列化并验证
-    let result = await super.transform(value, metadata)
-    if (typeof result.transfrom === 'function') {
-      result = await result.transfrom(result)
-      let { transforn, data } = result
+    let result = await super.transform(toValidator, metadata)
+    if (typeof result.transform(result) == 'function') {
+      result = await result.transform(result)
+      let { transform, ...data } = result
       result = data
-
     }
-
-    this.validatorOptions = initValidatorOption;
+    // 重置验证选项
+    this.validatorOptions = initValidatorOptions;
     // 重置transform选项
-    this.transformOptions = initTransformOption;
+    this.transformOptions = initTransformOptions;
     return result;
+
+
   }
+
 
 
 }
