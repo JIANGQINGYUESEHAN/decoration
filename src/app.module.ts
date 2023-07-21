@@ -6,12 +6,42 @@ import AppPipe from './pipe/app.pipe';
 import { AppFilter } from './filter/http..excepetion';
 import { AppInterceptor } from './intercepter/app.intercepter';
 import { SerializeInterceptor } from './intercepter/serialization.intercepter';
+import { BullModule } from '@nestjs/bull';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
-
+import redisConfig from './config/redis';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import * as entities from './database/entity'
+import * as repositories from './database/repository'
+import * as services from './service'
 @Module({
-  imports: [DatabaseModule.forRoot(GetConfig())],
+  imports: [
+    DatabaseModule.forRoot(GetConfig()),
+    TypeOrmModule.forFeature(Object.values(entities)),
+    DatabaseModule.forRepository(Object.values(repositories)),
+    ConfigModule.forRoot(
+      {
+        load: [redisConfig],
+        isGlobal: true
+      }
+    ),
+    {
+      ...BullModule.forRootAsync({
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          redis: {
+            host: config.get('redis.host'),
+            port: config.get('redis.port'),
+            password: config.get('redis.password'),
+          },
+        }),
+      }),
+      global: true,
+    },],
   controllers: [],
+  exports: [...Object.values(services), DatabaseModule.forRepository(Object.values(repositories)),],
   providers: [
+    ...Object.values(services),
     {
       provide: APP_INTERCEPTOR,
       useClass: SerializeInterceptor,

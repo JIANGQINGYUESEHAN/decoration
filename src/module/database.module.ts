@@ -13,32 +13,31 @@ export class DatabaseModule {
       exports: []
     }
   }
-  static repository<T extends Type<any>>(
-    Repo: T[],
-    dataSourceName?: string
+  static forRepository<T extends Type<any>>(
+    repositories: T[],
+    dataSourceName?: string,
   ): DynamicModule {
-
     const providers: Provider[] = [];
 
-    for (let repo of Repo) {
-      let entity = Reflect.getMetadata(CUSTOM_REPOSITORY_METADATA, repo)
-      if (entity!) {
+    for (const Repo of repositories) {
+      const entity = Reflect.getMetadata(CUSTOM_REPOSITORY_METADATA, Repo);
+
+      if (!entity) {
         continue;
       }
       providers.push({
         inject: [getDataSourceToken(dataSourceName)],
-        provide: repo,
-        useFactory: ((dataSource: DataSource) => {
-          let base = dataSource.getRepository(entity)
-          return new repo(base.target, base.manager, base.queryRunner)
-        })
-      })
+        provide: Repo,
+        useFactory: (dataSource: DataSource): InstanceType<typeof Repo> => {
+          const base = dataSource.getRepository<ObjectType<any>>(entity);
+          return new Repo(base.target, base.manager, base.queryRunner);
+        },
+      });
     }
     return {
-      module: DatabaseModule,
       exports: providers,
-      providers
-    }
-
+      module: DatabaseModule,
+      providers,
+    };
   }
 }
