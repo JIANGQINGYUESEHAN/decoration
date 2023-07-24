@@ -7,7 +7,14 @@ export class UserService {
     protected userRepository: UserRepository
 
   ) { }
-  //用户信息的增删改查
+
+  //注册
+  // register(){
+
+  // }
+  //用户信息的查询
+
+  //
 
   //用户查询菜单
 
@@ -16,6 +23,8 @@ export class UserService {
   //用户修改头像
 
 
+
+  /* 管理员 */
 
 
 

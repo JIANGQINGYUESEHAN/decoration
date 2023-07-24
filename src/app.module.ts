@@ -14,6 +14,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as entities from './database/entity'
 import * as repositories from './database/repository'
 import * as services from './service'
+import * as controllers from './controller'
 @Module({
   imports: [
     DatabaseModule.forRoot(GetConfig()),
@@ -38,7 +39,7 @@ import * as services from './service'
       }),
       global: true,
     },],
-  controllers: [],
+  controllers: Object.values(controllers),
   exports: [...Object.values(services), DatabaseModule.forRepository(Object.values(repositories)),],
   providers: [
     ...Object.values(services),

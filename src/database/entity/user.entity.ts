@@ -8,31 +8,31 @@ export class UserEntity {
   id: string
 
   @Expose()
-  @Column({ name: "用户昵称" })
+  @Column({ comment: "用户昵称" })
   username: string
 
   @Exclude()
-  @Column({ name: "密码" })
+  @Column({ comment: "密码" })
   password: string
 
   @Expose()
-  @Column({ name: "用户头像", default: 'http://zy.img.qiuyue.space/default.webp' })
+  @Column({ comment: "用户头像", default: 'http://zy.img.qiuyue.space/default.webp' })
   avatersrc: string
 
-  @Expose()
-  @Column({ name: "账户性质" })
+  @Exclude()
+  @Column({ comment: "账户性质", default: "user" })
   roletype: string
 
   @Expose()
-  @Column({ name: "电子邮件" })
+  @Column({ comment: "电子邮件" })
   email: string
 
   @Expose()
-  @Column({ name: "性别", default: null })
+  @Column({ comment: "性别", default: null })
   gender: string
 
   @Expose()
-  @Column({ name: "地址" })
+  @Column({ comment: "地址" })
   address: string
 
 

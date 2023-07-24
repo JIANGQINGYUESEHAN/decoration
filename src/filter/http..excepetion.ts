@@ -42,7 +42,9 @@ export class AppFilter<T extends Error> extends BaseExceptionFilter {
       statusCode: status,
       message: res,
     }
-    appApplicationAdapter!.reply(host.getArgByIndex(1), message, status);
+    console.log(1222);
+
+    appApplicationAdapter?.reply(host.getArgByIndex(1), message, status);
 
   }
 
