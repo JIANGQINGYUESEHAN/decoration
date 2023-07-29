@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 import { DtoDecoration } from "src/decoration/dto.decoration";
 import { IsRegular } from "src/validator/password.constraint";
 
@@ -17,4 +17,10 @@ export class UserRegisterDto {
   @IsNotEmpty()
   repassword: string
 
+}
+
+@DtoDecoration({ type: 'body' })
+export default class MailDto {
+  @IsEmail()
+  mail: string
 }

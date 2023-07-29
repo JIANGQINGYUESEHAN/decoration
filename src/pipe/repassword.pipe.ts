@@ -1,19 +1,16 @@
-import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from "@nestjs/common";
+import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform, HttpException } from '@nestjs/common';
+import { UserRegisterDto } from "src/dto/user.dto";
 
 @Injectable()
 export class TestRePassword implements PipeTransform {
-  transform(value: any, metadata: ArgumentMetadata) {
-    console.log(1);
+  transform(value: UserRegisterDto, metadata: ArgumentMetadata) {
 
-    if (metadata.type === 'body' && typeof value !== 'object') {
-      try {
-        value = JSON.parse(value);
-        console.log(value);
-
-      } catch (e) {
-        throw new BadRequestException('Invalid JSON data');
-      }
+    if (value.repassword == value.password) {
+      return delete value.repassword
+    } else {
+      throw new HttpException("密码不相同", 404)
     }
+
   }
 
 }

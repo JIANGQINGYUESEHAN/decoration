@@ -6,7 +6,6 @@ import AppPipe from './pipe/app.pipe';
 import { AppFilter } from './filter/http..excepetion';
 import { AppInterceptor } from './intercepter/app.intercepter';
 import { SerializeInterceptor } from './intercepter/serialization.intercepter';
-import { BullModule } from '@nestjs/bull';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import redisConfig from './config/redis';
@@ -15,32 +14,26 @@ import * as entities from './database/entity'
 import * as repositories from './database/repository'
 import * as services from './service'
 import * as controllers from './controller'
+import MailerConfig from './config/mailer.config';
+import { MailModule } from './module/mailer.module';
+
 @Module({
   imports: [
     DatabaseModule.forRoot(GetConfig()),
     TypeOrmModule.forFeature(Object.values(entities)),
     DatabaseModule.forRepository(Object.values(repositories)),
+    MailModule.forRootAsync(),
+
     ConfigModule.forRoot(
       {
-        load: [redisConfig],
+        load: [redisConfig, MailerConfig],
         isGlobal: true
       }
     ),
-    {
-      ...BullModule.forRootAsync({
-        inject: [ConfigService],
-        useFactory: (config: ConfigService) => ({
-          redis: {
-            host: config.get('redis.host'),
-            port: config.get('redis.port'),
-            password: config.get('redis.password'),
-          },
-        }),
-      }),
-      global: true,
-    },],
+
+  ],
   controllers: Object.values(controllers),
-  exports: [...Object.values(services), DatabaseModule.forRepository(Object.values(repositories)),],
+  exports: [...Object.values(services), DatabaseModule.forRepository(Object.values(repositories))],
   providers: [
     ...Object.values(services),
     {

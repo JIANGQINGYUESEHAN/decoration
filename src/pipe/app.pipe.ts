@@ -33,30 +33,26 @@ export default class AppPipe extends ValidationPipe {
       arrayMerge: (_d, s, _o) => _d
     })
 
-    let toValidator = isObject(value) ?
-      Object.fromEntries(Object.entries((value as Record<string, any>).map(([key, v]) => {
-        if (!isObject(v) || !('mimetype' in v)) {
-          return [key, v]
-        } else {
-          return [key, omit(v, 'fields')]
-        }
-      }))) : value
 
-    let result = await super.transform(toValidator, metadata)
-    if (typeof result.transform(result) == 'function') {
-      result = await result.transform(result)
-      let { transform, ...data } = result
-      result = data
+    const toValidation = isObject(value)
+      ? Object.fromEntries(
+        Object.entries(value as Record<string, any>).map(([key, v]) => {
+          if (!isObject(v) || !('mimetype' in v)) return [key, v];
+          return [key, omit(v, ['fields'])];
+        }),
+      )
+      : value;
+    let result = await super.transform(toValidation, metadata);
+    if (typeof result.transform == 'function') {
+      result = result.transform(result);
+      const { transform, ...data } = result;
+      result = data;
     }
-    // 重置验证选项
-    this.validatorOptions = initValidatorOptions;
-    // 重置transform选项
+
+
     this.transformOptions = initTransformOptions;
+    this.validatorOptions = initValidatorOptions;
+
     return result;
-
-
   }
-
-
-
 }

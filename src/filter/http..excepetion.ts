@@ -4,50 +4,43 @@ import { isObject } from "lodash";
 import { EntityNotFoundError, EntityPropertyNotFoundError, QueryFailedError } from "typeorm";
 
 @Catch()
-export class AppFilter<T extends Error> extends BaseExceptionFilter {
-  protected resExceptions: Array<{ class: Type<Error>, status: number } | Type<Error>> = [
-    { class: EntityNotFoundError, status: HttpStatus.NOT_FOUND },
-    { class: QueryFailedError, status: HttpStatus.BAD_REQUEST },
-    { class: EntityPropertyNotFoundError, status: HttpStatus.BAD_REQUEST },
-  ]
-
+export class AppFilter<T extends Error> extends BaseExceptionFilter<T> {
+  protected resExceptions: Array<
+    { class: Type<Error>; status: number } | Type<Error>
+  > = [
+      { class: EntityNotFoundError, status: HttpStatus.NOT_FOUND },
+      { class: QueryFailedError, status: HttpStatus.BAD_REQUEST },
+      { class: EntityPropertyNotFoundError, status: HttpStatus.BAD_REQUEST },
+    ];
   catch(exception: T, host: ArgumentsHost) {
-    let appApplicationAdapter = this.applicationRef || (this.httpAdapterHost && this.httpAdapterHost.httpAdapter)!
+    const applicationAdapter =
+      this.applicationRef ||
+      (this.httpAdapterHost && this.httpAdapterHost.httpAdapter)!;
 
-    //判断捕获 res在不在
-    let resException = this.resExceptions.find(item => {
-      'class' in item ? exception instanceof item.class : exception instanceof item
-    })
-
-    if (!exception && !(exception instanceof HttpException)) {
-      return this.handleUnknownError(exception, host, appApplicationAdapter)
+    //判断 exception 在不在 resException中
+    const resException = this.resExceptions.find((item) => {
+      'class' in item
+        ? exception instanceof item.class
+        : exception instanceof item;
+    });
+    if (!resException && !(exception instanceof HttpException)) {
+      return this.handleUnknownError(exception, host, applicationAdapter);
     }
-    let res: string | object = ''
-    let status: number = HttpStatus.INTERNAL_SERVER_ERROR
 
+    let res: string | object = '';
+    let statusCode: number = HttpStatus.INTERNAL_SERVER_ERROR;
     if (exception instanceof HttpException) {
-      res = exception.getResponse()
-      status = exception.getStatus()
+      res = exception.getResponse();
+      statusCode = exception.getStatus();
     } else if (resException) {
-      let E = resException as unknown as Error
-      res = E.message
+      const e = exception as Error;
+      res = e.message;
       if ('class' in resException && resException.status) {
-        status = resException.status;
+        statusCode = resException.status;
       }
-
-
     }
+    const message = isObject(res) ? res : { res, statusCode };
 
-    let message = isObject(res) ? res : {
-      statusCode: status,
-      message: res,
-    }
-    console.log(1222);
-
-    appApplicationAdapter?.reply(host.getArgByIndex(1), message, status);
-
+    applicationAdapter.reply(host.getArgByIndex(1), message, statusCode);
   }
-
-
-
 }

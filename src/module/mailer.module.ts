@@ -1,10 +1,8 @@
-import { DynamicModule, Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
 
-import { Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({})
 export class MailModule {

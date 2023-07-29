@@ -9,7 +9,6 @@ import { Observable, map } from 'rxjs';
 interface Response<T> {
   data: T;
 }
-
 @Injectable()
 export class AppInterceptor<T> implements NestInterceptor {
   intercept(
