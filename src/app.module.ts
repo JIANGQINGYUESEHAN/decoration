@@ -16,6 +16,13 @@ import * as services from './service'
 import * as controllers from './controller'
 import MailerConfig from './config/mailer.config';
 import { MailModule } from './module/mailer.module';
+import { RedisModule } from './redis/redis.module';
+
+
+
+
+
+
 
 @Module({
   imports: [
@@ -23,7 +30,7 @@ import { MailModule } from './module/mailer.module';
     TypeOrmModule.forFeature(Object.values(entities)),
     DatabaseModule.forRepository(Object.values(repositories)),
     MailModule.forRootAsync(),
-
+    RedisModule,
     ConfigModule.forRoot(
       {
         load: [redisConfig, MailerConfig],
@@ -33,9 +40,10 @@ import { MailModule } from './module/mailer.module';
 
   ],
   controllers: Object.values(controllers),
-  exports: [...Object.values(services), DatabaseModule.forRepository(Object.values(repositories))],
+  exports: [...Object.values(services), DatabaseModule.forRepository(Object.values(repositories)),],
   providers: [
     ...Object.values(services),
+
     {
       provide: APP_INTERCEPTOR,
       useClass: SerializeInterceptor,

@@ -1,14 +1,25 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
-import { RedisConfig } from "./types";
-import { isNil } from 'lodash'
+import { isNil } from 'lodash';
+
+import { RedisConfig } from '../types';
+
+/**
+ * Redis服务
+ */
 @Injectable()
 export class RedisService {
+  /**
+   * Redis配置
+   */
+  protected options: any;
 
+  /**
+   * 客户端连接
+   */
   protected clients: Map<string, Redis> = new Map();
-  protected options: RedisConfig;
-  constructor(options: RedisConfig) {
 
+  constructor(options: any) {
     this.options = options;
   }
 
@@ -20,8 +31,14 @@ export class RedisService {
    * 通过配置创建所有连接
    */
   async createClients() {
-    this.options.map(async (o) => {
-      this.clients.set(o.name, new Redis(o));
+    console.log(this.options);
+
+
+    new Redis({
+      port: 6379, // Redis port
+      host: this.options.host,
+      password: this.options.password,
+      db: 0, // Defaults to 0
     });
   }
 
