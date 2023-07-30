@@ -12,8 +12,6 @@ import { ConfigService } from '@nestjs/config';
       inject: [ConfigService],
       provide: RedisService,
       useFactory: async (configService: ConfigService) => {
-        // const configure = configService.get('Redis')
-        // console.log(configService.get('Redis'));
 
         const service = new RedisService(await configService.get('Redis'));
         service.createClients();

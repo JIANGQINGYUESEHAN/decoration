@@ -8,20 +8,16 @@ import { AppInterceptor } from './intercepter/app.intercepter';
 import { SerializeInterceptor } from './intercepter/serialization.intercepter';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
-import redisConfig from './config/redis';
+import redisConfig from './config/redis.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as entities from './database/entity'
 import * as repositories from './database/repository'
 import * as services from './service'
 import * as controllers from './controller'
 import MailerConfig from './config/mailer.config';
-import { MailModule } from './module/mailer.module';
+
 import { RedisModule } from './redis/redis.module';
-
-
-
-
-
+import { SenderModule } from './sender/sender.module';
 
 
 @Module({
@@ -29,7 +25,8 @@ import { RedisModule } from './redis/redis.module';
     DatabaseModule.forRoot(GetConfig()),
     TypeOrmModule.forFeature(Object.values(entities)),
     DatabaseModule.forRepository(Object.values(repositories)),
-    MailModule.forRootAsync(),
+    //MailModule.forRootAsync(),
+    SenderModule,
     RedisModule,
     ConfigModule.forRoot(
       {

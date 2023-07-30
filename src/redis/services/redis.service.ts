@@ -31,7 +31,6 @@ export class RedisService {
    * 通过配置创建所有连接
    */
   async createClients() {
-    console.log(this.options);
 
 
     new Redis({
