@@ -1,6 +1,7 @@
 import { DynamicModule, Module, Provider, Type } from "@nestjs/common";
 import { TypeOrmModule, TypeOrmModuleOptions, getDataSourceToken } from '@nestjs/typeorm';
 import { CUSTOM_REPOSITORY_METADATA } from "src/config/constant";
+import { UniqueConstraint } from "src/validator/unique.constraint";
 import { DataSource, ObjectType } from "typeorm";
 
 @Module({})
@@ -10,7 +11,7 @@ export class DatabaseModule {
       global: true,
       module: DatabaseModule,
       imports: [TypeOrmModule.forRoot(Config)],
-      exports: []
+      providers: [UniqueConstraint]
     }
   }
   static forRepository<T extends Type<any>>(

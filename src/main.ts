@@ -11,7 +11,7 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
-  useContainer(app.select(AppModule), { fallbackOnErrors: true })
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
   await app.listen(3000);
 }
 bootstrap();

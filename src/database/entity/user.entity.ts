@@ -24,7 +24,7 @@ export class UserEntity {
   roletype: string
 
   @Expose()
-  @Column({ comment: "电子邮件" })
+  @Column({ comment: "电子邮件", default: null })
   email: string
 
   @Expose()
@@ -32,7 +32,7 @@ export class UserEntity {
   gender: string
 
   @Expose()
-  @Column({ comment: "地址" })
+  @Column({ comment: "地址", default: null })
   address: string
 
 

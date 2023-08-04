@@ -26,7 +26,8 @@ import { SenderModule } from './sender/sender.module';
     TypeOrmModule.forFeature(Object.values(entities)),
     DatabaseModule.forRepository(Object.values(repositories)),
     //MailModule.forRootAsync(),
-    SenderModule,
+    /* 邮件验证暂时不写 */
+    //SenderModule,
     RedisModule,
     ConfigModule.forRoot(
       {
