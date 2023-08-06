@@ -29,6 +29,7 @@ export default class AppPipe extends ValidationPipe {
       })
     }
 
+
     this.validatorOptions = deepmerge(this.validatorOptions, customOption ?? {}, {
       arrayMerge: (_d, s, _o) => _d
     })

@@ -6,7 +6,8 @@ export class TestRePassword implements PipeTransform {
   transform(value: UserRegisterDto, metadata: ArgumentMetadata) {
 
     if (value.repassword == value.password) {
-      return delete value.repassword
+      delete value.repassword
+      return value
     } else {
       throw new HttpException("密码不相同", 404)
     }

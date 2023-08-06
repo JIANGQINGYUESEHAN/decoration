@@ -4,6 +4,7 @@ import { DataSource, ObjectType, Repository } from "typeorm";
 import { isNil } from 'lodash'
 type Condition = {
   entity: ObjectType<any>
+  IsTrue?: boolean
   map?: string
 
 }
@@ -12,9 +13,10 @@ type Condition = {
 export class UniqueConstraint implements ValidatorConstraintInterface {
   constructor(protected dataSource: DataSource) { }
   async validate(value: any, args?: ValidationArguments) {
-    let map
+    let map, IsTrue
     let Repo: Repository<any>
     map = args.constraints[0].map ?? args.property
+    IsTrue = args.constraints[0].IsTrue || false
 
     //获取entity
     if (('entity' in args.constraints[0])) {
@@ -28,10 +30,20 @@ export class UniqueConstraint implements ValidatorConstraintInterface {
     let IsExit = await Repo.createQueryBuilder()
       .where({ [map]: value })
       .getOne()
+    if (!IsTrue) {
+      //验证存在时
+      if (IsExit == null) {
 
-    if (IsExit == null) {
-      return true
+        return true
+      }
+    } else {
+      //验证不存在时
+      if (IsExit == null) {
+
+        return false
+      }
     }
+
 
 
 
@@ -39,9 +51,6 @@ export class UniqueConstraint implements ValidatorConstraintInterface {
   defaultMessage?(args?: ValidationArguments) {
     const { entity, property } = args.constraints[0];
     const queryProperty = property ?? args.property;
-    if (!(args.object as any).getManager) {
-      return 'getManager function not been found!';
-    }
     if (!entity) {
       return 'Model not been specified!';
     }

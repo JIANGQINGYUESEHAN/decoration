@@ -4,14 +4,14 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 @Entity('user')
 export class UserEntity {
   @Expose()
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string
 
   @Expose()
   @Column({ comment: "用户昵称" })
   username: string
 
-  @Exclude()
+  @Exclude({ toPlainOnly: true })
   @Column({ comment: "密码" })
   password: string
 
