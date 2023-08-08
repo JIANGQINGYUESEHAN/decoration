@@ -18,6 +18,9 @@ import MailerConfig from './config/mailer.config';
 
 import { RedisModule } from './redis/redis.module';
 import { SenderModule } from './sender/sender.module';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtModuleRegister } from './token/token.option';
 
 
 @Module({
@@ -25,6 +28,8 @@ import { SenderModule } from './sender/sender.module';
     DatabaseModule.forRoot(GetConfig()),
     TypeOrmModule.forFeature(Object.values(entities)),
     DatabaseModule.forRepository(Object.values(repositories)),
+    PassportModule,
+    JwtModule.registerAsync({ useFactory: JwtModuleRegister }),
     //MailModule.forRootAsync(),
     /* 邮件验证暂时不写 */
     //SenderModule,
